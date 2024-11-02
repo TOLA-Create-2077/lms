@@ -1,0 +1,56 @@
+  body {
+            background-image: url('../img/1720431512953.png'); /* Replace with the actual path to your image */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+        
+          
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            margin-left: 220px;
+        }
+        .container h1 {
+            font-size: 24px;
+            color: #1877f2;
+            margin-bottom: 20px;
+        }
+        .container label {
+            display: block;
+            margin-bottom: 8px;
+            color: #65676b;
+            text-align: left;
+        }
+        .container input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 16px;
+            border: 1px solid #ccd0d5;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .container input[type="submit"] {
+            background-color: #1877f2;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border: none;
+            font-size: 16px;
+        }
+        .container input[type="submit"]:hover {
+            background-color: #166fe5;
+        }
+        .container p.error {
+            color: #dc143c;
+            margin-top: 16px;
+        }
