@@ -53,7 +53,9 @@ $telegramData = fetchTelegramData();
                 <div class="card">
 
                     <div class="card-header">
-                        <p class="card-title fs-15">Telegram_bot</p>
+                        <p class="card-title fs-15"> <i class="fa-solid fa-robot"></i> Telegram_bot</p>
+
+
                     </div>
                     <div class="card-body">
                         <table class="table table-striped">

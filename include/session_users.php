@@ -12,7 +12,7 @@ if (!isset($_SESSION['role'])) {
 switch ($_SESSION['role']) {
     case 'admin':
         // Redirect admin users to their dashboard or admin page
-        header("Location: ../admin/dashboard.php"); // Change this to the desired admin page
+        header("Location: ../../index.php"); // Redirect to login page if not logged in
         exit();
 
     case 'staff':

@@ -170,7 +170,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                                 <th>ស្ថានភាព</th>
                                 <td>
                                     <span class='badge bg-<?php
-                                                            echo ($leaveDetails['status'] == 'Approved') ? 'success' : (($leaveDetails['status'] == 'Rejected') ? 'danger' : (($leaveDetails['status'] == 'Canceled') ? 'secondary' : 'warning'));
+                                                            echo ($leaveDetails['status'] == 'អនុញ្ញាត') ? 'success' : (($leaveDetails['status'] == 'បដិសេធ') ? 'danger' : (($leaveDetails['status'] == 'បោះបង់') ? 'secondary' : 'warning'));
                                                             ?>'>
                                         <?php echo htmlspecialchars($leaveDetails['status']); ?>
                                     </span>

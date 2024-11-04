@@ -83,24 +83,20 @@ $departments = $departmentResult->fetchAll();
 
 
                         </div>
-                        <div id="left">
-                            <h1>បញ្ជីអ្នកប្រើប្រាស់</h1>
-                        </div>
+
 
                     </div>
 
                     <div class="card mb-4">
                         <div class="card-header">
-                            <div class="card-header d-flex justify-content-end">
-                                <div>
 
-                                </div>
-                                <div>
-                                    <a href="add_user.php" class="btn btn-primary">
-                                        <i class="fa-solid fa-user-plus"></i> បន្ថែមអ្នកប្រើប្រាស់
-                                    </a>
-                                </div>
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h1>បញ្ជីអ្នកប្រើប្រាស់</h1>
+                                <a href="add_user.php" class="btn btn-primary">
+                                    <i class="fa-solid fa-user-plus"></i> បន្ថែមអ្នកប្រើប្រាស់
+                                </a>
                             </div>
+
 
 
 

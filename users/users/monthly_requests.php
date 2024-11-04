@@ -79,8 +79,8 @@ $conn_days = $totalDaysResult['conn_days'] ?? 0; // Set to 0 if no leave days ar
                                     <tr>
                                         <th>ID</th> <!-- ID -->
                                         <th>ឈ្មោះ</th> <!-- Applicant -->
-                                        <th>ថ្ងៃចាប់ផ្តើម</th> <!-- Start Date -->
-                                        <th>ថ្ងៃបញ្ចប់</th> <!-- End Date -->
+                                        <th>កាលបរិច្ឆេទចាប់ផ្តើម</th>
+                                        <th>កាលបរិច្ឆេទបញ្ចប់</th>
                                         <th>ចំនួនថ្ងៃ</th> <!-- Total Days -->
                                         <th>មូលហេតុ</th> <!-- Reason -->
                                         <th>ស្ថានភាព</th> <!-- Status -->

@@ -11,6 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 // Require necessary files
 require '../vendor/autoload.php';
 
+// Database connection
 $host = 'localhost'; // or your host
 $username = 'root'; // your database username
 $password = ''; // your database password
@@ -24,6 +25,7 @@ if ($db->connect_error) {
     die("Connection failed: " . $db->connect_error);
 }
 
+// Use PhpSpreadsheet classes
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -33,29 +35,41 @@ $monthFilter = $_GET['month'] ?? '';
 $yearFilter = $_GET['year'] ?? '';
 $userId = $_SESSION['user_id']; // Get logged-in user ID
 
-$query = "SELECT lr.id, lr.user_id, lr.fromDate, lr.toDate, lr.total_days, lr.reason, lr.status, lr.approved_by, lr.department_id, lr.updated_at, lr.date_send, lr.comment, ui.first_name, ui.last_name 
+// Base query
+$query = "SELECT lr.id, lr.user_id, lr.fromDate, lr.toDate, lr.total_days, lr.reason, lr.status, lr.approved_by, 
+                 lr.department_id, lr.updated_at, lr.date_send, lr.comment, 
+                 ui.first_name, ui.last_name, 
+                 approver.first_name AS approver_first_name, approver.last_name AS approver_last_name,
+                 d.department_name 
           FROM leave_requests lr 
           LEFT JOIN user_info ui ON lr.user_id = ui.user_id 
-          WHERE lr.user_id = ?"; // Only fetch requests for the logged-in user
+          LEFT JOIN user_info approver ON lr.approved_by = approver.user_id 
+          LEFT JOIN departments d ON lr.department_id = d.department_id 
+          WHERE lr.user_id = ?";
 
-// Prepare the statement
-$stmt = $db->prepare($query);
-$stmt->bind_param("i", $userId); // Bind the user_id parameter
+// Dynamic filters
+$parameters = [$userId];
+$types = "i"; // 'i' for integer
 
-// Add filters if set
 if ($statusFilter) {
     $query .= " AND lr.status = ?";
-    $stmt->bind_param("s", $statusFilter);
+    $parameters[] = $statusFilter;
+    $types .= "s"; // 's' for string
 }
 if ($monthFilter) {
     $query .= " AND MONTH(lr.fromDate) = ?";
-    $stmt->bind_param("i", $monthFilter);
+    $parameters[] = $monthFilter;
+    $types .= "i";
 }
 if ($yearFilter) {
     $query .= " AND YEAR(lr.fromDate) = ?";
-    $stmt->bind_param("i", $yearFilter);
+    $parameters[] = $yearFilter;
+    $types .= "i";
 }
 
+// Prepare and bind parameters
+$stmt = $db->prepare($query);
+$stmt->bind_param($types, ...$parameters);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -109,11 +123,11 @@ $headerTitles = [
 foreach ($headerTitles as $key => $title) {
     $col = chr(65 + $key); // Convert to column letter (A, B, C, ...)
     $sheet->setCellValue($col . '2', $title);
-    $sheet->getColumnDimension($col)->setWidth(20); // Set column width (adjust as necessary)
+    $sheet->getColumnDimension($col)->setWidth(20); // Set column width
     $sheet->getStyle($col . '2')->applyFromArray([
         'font' => [
+            'name' => 'Khmer OS Battambang',
             'bold' => true,
-            'color' => ['argb' => 'FFFFFFFF'],
         ],
         'fill' => [
             'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
@@ -138,8 +152,8 @@ foreach ($leaveRequests as $request) {
     $sheet->setCellValue('F' . $rowNum, $request['reason']);
     $sheet->setCellValue('G' . $rowNum, $request['status']);
     $sheet->setCellValue('H' . $rowNum, $request['date_send']);
-    $sheet->setCellValue('I' . $rowNum, $request['approved_by']);
-    $sheet->setCellValue('J' . $rowNum, $request['department_id']);
+    $sheet->setCellValue('I' . $rowNum, $request['approver_first_name'] . ' ' . $request['approver_last_name']); // Display approver name
+    $sheet->setCellValue('J' . $rowNum, $request['department_name']); // Display department name
     $sheet->setCellValue('K' . $rowNum, $request['updated_at']);
     $sheet->setCellValue('L' . $rowNum, $request['comment']);
 

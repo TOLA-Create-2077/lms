@@ -48,8 +48,8 @@ $monthlyRequestsResult = $conn->query($sql)->fetchAll(PDO::FETCH_ASSOC);
                                 <tr>
                                     <th>ID</th>
                                     <th>ឈ្មោះ</th>
-                                    <th>ថ្ងៃចាប់ផ្តើម</th>
-                                    <th>ថ្ងៃបញ្ចប់</th>
+                                    <th>កាលបរិច្ឆេទចាប់ផ្តើម</th>
+                                    <th>កាលបរិច្ឆេទបញ្ចប់</th>
                                     <th>ចំនួនថ្ងៃ</th>
                                     <th>ហេតុផល</th>
                                     <th>ស្ថានភាព</th>

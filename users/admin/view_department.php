@@ -55,25 +55,21 @@ $departmentData = fetchDepartmentData();
 
         </div>
 
-        <div id="left">
-            <h1>ដេប៉ាតឺម៉ង់</h1>
-        </div>
+
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
 
 
                     <div class="card-header">
-                        <div class="card-header d-flex justify-content-end">
-                            <div>
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h1><i class="fa-solid fa-building"></i> ដេប៉ាតឺម៉ង់</h1>
 
-                            </div>
-                            <div>
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDepartmentModal">
-                                    <i class="fa-solid fa-add"></i> បន្ថែមដេប៉ាតឺម៉ង់
-                                </button>
-                            </div>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDepartmentModal">
+                                <i class="fa-solid fa-add"></i> បន្ថែមដេប៉ាតឺម៉ង់
+                            </button>
                         </div>
+
 
 
 
@@ -83,7 +79,7 @@ $departmentData = fetchDepartmentData();
                         <table class="table table-striped" id="dataTable">
                             <thead>
                                 <tr>
-                                    <th>ID ផ្នែក</th>
+                                    <th></th>
                                     <th>ឈ្មោះផ្នែក</th>
                                     <th>កាលបរិច្ឆេទបង្កើត</th>
                                     <th>សកម្មភាព</th>
