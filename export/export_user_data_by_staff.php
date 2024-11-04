@@ -57,7 +57,7 @@ $sheet->setCellValue('A1', 'របាយការណ៍ការសុំច្�
     ->mergeCells('A1:L1');
 $sheet->getStyle('A1')->applyFromArray([
     'font' => [
-        'name' => 'Khmer OS Moul Light',
+        'name' => 'Khmer OS Battambang',
         'bold' => true,
         'size' => 14,
     ],

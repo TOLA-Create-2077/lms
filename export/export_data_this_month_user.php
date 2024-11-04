@@ -50,7 +50,7 @@ ORDER BY lr.fromDate ASC";
     // Title styling
     $sheet->getStyle('A1')->applyFromArray([
         'font' => [
-            'name' => 'Khmer OS Moul Light',
+            'name' => 'Khmer OS Battambang',
             'bold' => true,
             'size' => 14,
         ],

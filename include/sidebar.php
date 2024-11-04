@@ -292,16 +292,16 @@ $conn->close();
                                     <p>បន្ថែម</p>
                                     <span class="caret"></span>
                                 </a>
-                                <div class="collapse" id="tables">
+                                <div class="collapse <?= (basename($_SERVER['PHP_SELF']) == 'view_department.php' || basename($_SERVER['PHP_SELF']) == 'view_telegram_data.php') ? "show" : "" ?>" id="tables">
                                     <ul class="nav nav-collapse  ">
 
-                                        <a href="view_department.php" class="ml-4">
+                                        <a href="view_department.php" class="ml-4 <?= (basename($_SERVER['PHP_SELF']) == 'view_department.php') ? "active" : "" ?>">
                                             <i class="fas fa-building"></i> <!-- Icon for "ដេប៉ាតឺម៉ង់" -->
                                             <span class="sub-item">ដេប៉ាតឺម៉ង់</span>
                                         </a>
 
 
-                                        <a href="view_telegram_data.php" class="ml-4 ">
+                                        <a href="view_telegram_data.php" class="ml-4 <?= (basename($_SERVER['PHP_SELF']) == 'view_telegram_data.php') ? "active" : "" ?>">
                                             <i class="fas fa-robot"></i> <!-- Icon for "Telegram_bot" -->
                                             <span class="sub-item">Telegram_bot</span>
                                         </a>

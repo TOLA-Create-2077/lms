@@ -27,12 +27,11 @@ try {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validate the POST data
     $leaveId = isset($_POST['leave_id']) ? trim($_POST['leave_id']) : '';
-    $comment = isset($_POST['comment']) ? trim($_POST['comment']) : '';
     $approvedBy = $_SESSION['user_id']; // Get the ID of the user approving the leave
 
     // Basic validation
-    if (empty($leaveId) || empty($comment)) {
-        $_SESSION['alert'] = ['type' => 'danger', 'message' => 'លេខសម្គាល់នៃសំណើបញ្ឈប់ និងមតិយោបល់ គឺចាំបាច់សម្រាប់ការបដិសេធ។'];
+    if (empty($leaveId)) {
+        $_SESSION['alert'] = ['type' => 'danger', 'message' => 'លេខសម្គាល់នៃសំណើបញ្ឈប់ គឺចាំបាច់សម្រាប់ការបដិសេធ។'];
         header("Location: leave_manage.php");
         exit();
     }
@@ -44,10 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        // Prepare SQL statement to update the leave request status to 'Rejected'
-        $updateSql = "UPDATE leave_requests SET status = 'អនុញ្ញាត', comment = :comment, approved_by = :approved_by, updated_at = NOW() WHERE id = :id";
+        // Prepare SQL statement to update the leave request status to 'Approved'
+        $updateSql = "UPDATE leave_requests SET status = 'អនុញ្ញាត', approved_by = :approved_by, updated_at = NOW() WHERE id = :id";
         $stmt = $conn->prepare($updateSql);
-        $stmt->execute(['comment' => $comment, 'approved_by' => $approvedBy, 'id' => $leaveId]);
+        $stmt->execute(['approved_by' => $approvedBy, 'id' => $leaveId]);
 
         // Check if any rows were affected
         if ($stmt->rowCount() > 0) {
@@ -57,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } catch (PDOException $e) {
         // Handle SQL errors
-        $_SESSION['alert'] = ['type' => 'danger', 'message' => 'ការបដិសេធសំណើបញ្ឈប់បានបរាជ័យ: ' . $e->getMessage()];
+        $_SESSION['alert'] = ['type' => 'danger', 'message' => 'ការអនុញ្ញាតសំណើបានបរាជ័យ: ' . $e->getMessage()];
     }
 
     // Redirect to leave management page

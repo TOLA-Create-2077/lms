@@ -193,20 +193,15 @@ try {
         <div class="modal-content">
             <form id="approveCommentForm" method="POST" action="approve_status.php">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="approveCommentModalLabel">មតិយោបល់សម្រាប់ការអនុញ្ញាត</h5>
+                    <h5 class="modal-title" id="approveCommentModalLabel">តើអ្នកពិតជាចង់អនុញ្ញាតមែនទេ?</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeApproveModal()">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <input type="hidden" name="leave_id" id="approve_leave_id" />
-                    <div class="form-group">
-                        <label for="approve_comment">មតិយោបល់</label>
-                        <textarea name="comment" id="approve_comment" class="form-control" rows="3" required></textarea>
-                    </div>
-                </div>
+                <input type="hidden" name="leave_id" id="approve_leave_id" />
+
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeApproveModal()">បិទ</button>
+                    <button type="button" class="btn" style="background-color: #717272; color: white;" data-dismiss="modal" onclick="closeApproveModal()">បិទ</button>
                     <button type="submit" name="action" value="approve" class="btn btn-success">អនុញ្ញាត</button>
                 </div>
             </form>
@@ -235,7 +230,7 @@ try {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeRejectModal()">បិទ</button>
+                    <button type="button" class="btn" style="background-color: #717272; color: white;" data-dismiss="modal" onclick="closeRejectModal()">បិទ</button>
                     <button type="submit" name="action" value="reject" class="btn btn-danger">បដិសេធ</button>
                 </div>
             </form>

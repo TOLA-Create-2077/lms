@@ -45,78 +45,6 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Handle form submission for approve/reject
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Check CSRF Token
-    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        $_SESSION['alert'] = [
-            'type' => 'danger',
-            'message' => 'ការផ្តល់សិទ្ធិមិនត្រឹមត្រូវ។' // "Invalid CSRF token."
-        ];
-        header("Location: view_leave_details.php?id=" . $leave_id);
-        exit();
-    }
-
-    if (isset($_POST['action']) && in_array($_POST['action'], ['approve', 'reject'])) {
-        $action = $_POST['action'];
-        $comment = trim($_POST['comment'] ?? '');
-
-        // If action is reject, comment is required
-        if ($action === 'reject' && empty($comment)) {
-            $_SESSION['alert'] = [
-                'type' => 'danger',
-                'message' => 'សូមបញ្ចូលសេចក្ដីសម្រេចឬមតិយោបល់នៅពេលបដិសេធសំណើ។' // "Please provide a comment when rejecting the leave request."
-            ];
-            header("Location: view_leave_details.php?id=" . $leave_id);
-            exit();
-        }
-
-        // Determine the new status based on action
-        $new_status = ($action === 'approve') ? 'Approved' : 'Rejected';
-
-        // Update the leave request in the database
-        $update_sql = "
-            UPDATE leave_requests 
-            SET status = :status, 
-                comment = :comment, 
-                approved_by = :approved_by, 
-                updated_at = NOW() 
-            WHERE id = :id
-        ";
-        $stmt = $conn->prepare($update_sql);
-        $stmt->bindParam(':status', $new_status);
-        $stmt->bindParam(':comment', $comment);
-        $stmt->bindParam(':approved_by', $_SESSION['user_id'], PDO::PARAM_INT); // Ensure user_id is integer
-        $stmt->bindParam(':id', $leave_id, PDO::PARAM_INT);
-
-        try {
-            $stmt->execute();
-            $_SESSION['alert'] = [
-                'type' => 'success',
-                'message' => ($new_status === 'Approved') ? "សំណើបានធ្វើការអនុម័តដោយជោគជ័យ។" : "សំណើបានបដិសេធដោយជោគជ័យ។" // "Leave request has been successfully approved/rejected."
-            ];
-            header("Location: view_leave_details.php?id=" . $leave_id);
-            exit();
-        } catch (PDOException $e) {
-            // Log the error instead of displaying raw error messages to the user
-            error_log("Database Update Error: " . $e->getMessage());
-            $_SESSION['alert'] = [
-                'type' => 'danger',
-                'message' => "កំហុសក្នុងការកែប្រែសំណើ។" // "Error updating leave request."
-            ];
-            header("Location: view_leave_details.php?id=" . $leave_id);
-            exit();
-        }
-    } else {
-        $_SESSION['alert'] = [
-            'type' => 'danger',
-            'message' => 'សកម្មភាពមិនត្រឹមត្រូវ។' // "Invalid action."
-        ];
-        header("Location: view_leave_details.php?id=" . $leave_id);
-        exit();
-    }
-}
-
 // Fetch leave request details with necessary joins
 $sql = "
     SELECT 
@@ -157,12 +85,12 @@ if (!$leave) {
 }
 
 // Function to format dates
-function formatDate($dateStr)
+function formatDate($dateStr, $format = 'Y-m-d H:i:s')
 {
     if (empty($dateStr)) return 'N/A';
     try {
         $date = new DateTime($dateStr);
-        return $date->format('d M Y'); // Example: 25 Dec 2023
+        return $date->format($format);
     } catch (Exception $e) {
         return 'Invalid Date';
     }
@@ -175,11 +103,7 @@ function formatDate($dateStr)
     </button>
 </div>
 
-
-
-
-
-<div class="container"><br><br>
+<div class="container"><br>
     <div class="page-inner">
         <!-- Back Button -->
         <div class="mb-3">
@@ -204,27 +128,24 @@ function formatDate($dateStr)
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-
                     <div class="card-body">
                         <table class="table table-striped custom-table">
-
-
                             <!-- Display Leave Details -->
                             <div>
                                 <h2>ព័ត៌មានលម្អិតសំណើឈប់សម្រាក</h2>
                                 <table class="table table-bordered">
-
                                     <tr>
                                         <th>ឈ្មោះពេញអ្នកប្រើ</th>
                                         <td><?php echo htmlspecialchars($leave['submitter_first_name']) . ' ' . htmlspecialchars($leave['submitter_last_name']); ?></td>
                                     </tr>
                                     <tr>
-                                        <th>ថ្ងៃចាប់ផ្តើម</th>
-                                        <td><?php echo formatDate($leave['from_date']); ?></td>
+                                        <th>កាលបរិច្ឆេទចាប់ផ្តើម</th>
+
+                                        <td><?php echo formatDate($leave['from_date'], 'd/m/Y'); ?></td>
                                     </tr>
                                     <tr>
-                                        <th>ថ្ងៃបញ្ចប់</th>
-                                        <td><?php echo formatDate($leave['to_date']); ?></td>
+                                        <th>កាលបរិច្ឆេទបញ្ចប់</th>
+                                        <td><?php echo formatDate($leave['to_date'], 'd/m/Y'); ?></td>
                                     </tr>
                                     <tr>
                                         <th>ចំនួនថ្ងៃ</th>
@@ -245,7 +166,7 @@ function formatDate($dateStr)
                                                 'Pending'  => 'warning'
                                             ];
 
-                                            $badgeClass = isset($statusClasses[$leave['status']]) ? $statusClasses[$leave['status']] : 'primary';
+                                            $badgeClass = isset($statusClasses[$leave['status']]) ? $statusClasses[$leave['status']] : 'success';
                                             ?>
                                             <span class='badge bg-<?php echo $badgeClass; ?>'>
                                                 <?php echo htmlspecialchars($leave['status']); ?>
@@ -254,18 +175,16 @@ function formatDate($dateStr)
                                     </tr>
                                     <tr>
                                         <th>បានបញ្ជូននៅថ្ងៃ</th>
-                                        <td><?php echo formatDate($leave['date_send']); ?></td>
+                                        <td><?php echo formatDate($leave['date_send'], 'd/m/Y H:i:s'); ?></td>
                                     </tr>
-
                                     <tr>
                                         <th>ផ្នែក</th>
                                         <td><?php echo htmlspecialchars($leave['department_name'] ?? 'N/A'); ?></td>
                                     </tr>
                                     <tr>
                                         <th>បានធ្វើបច្ចុប្បន្នភាពនៅ</th>
-                                        <td><?php echo formatDate($leave['updated_at']); ?></td>
+                                        <td><?php echo formatDate($leave['updated_at'], 'd/m/Y H:i:s'); ?></td>
                                     </tr>
-
                                     <tr>
                                         <th>បានអនុម័តដោយ</th>
                                         <td>
@@ -283,44 +202,13 @@ function formatDate($dateStr)
                                         <td><?php echo nl2br(htmlspecialchars($leave['comment'] ?? 'N/A')); ?></td>
                                     </tr>
                                 </table>
-
-
                                 <br>
-
                             </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Add the JavaScript for handling required comment -->
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const approveButton = document.getElementById('approveBtn');
-                const rejectButton = document.getElementById('rejectBtn');
-                const commentField = document.getElementById('comment');
-
-                approveButton.addEventListener('click', function() {
-                    commentField.removeAttribute('required');
-                    commentField.classList.remove('is-invalid'); // Remove invalid styling if any
-                });
-
-                rejectButton.addEventListener('click', function() {
-                    commentField.setAttribute('required', 'required');
-                });
-
-                // Optional: Real-time validation feedback
-                commentField.addEventListener('input', function() {
-                    if (commentField.hasAttribute('required')) {
-                        if (commentField.value.trim() === '') {
-                            commentField.classList.add('is-invalid');
-                        } else {
-                            commentField.classList.remove('is-invalid');
-                        }
-                    }
-                });
-            });
-        </script>
         </body>
 
         </html>
