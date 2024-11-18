@@ -101,6 +101,9 @@ $departmentData = fetchDepartmentData();
                                                 data-bs-target="#editDepartmentModal">
                                                 <i class="fas fa-edit"></i> កែប្រែ
                                             </a>
+                                            <a href="#" class="delete-department" data-id="<?php echo $data['department_id']; ?>">
+                                                <i class="fas fa-trash"></i> លុប
+                                            </a>
 
                                         </td>
                                     </tr>
@@ -179,6 +182,52 @@ $departmentData = fetchDepartmentData();
                 // Populate the modal fields
                 document.getElementById('edit_department_id').value = id;
                 document.getElementById('edit_department_name').value = name;
+            });
+        });
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteLinks = document.querySelectorAll('.delete-department');
+
+        deleteLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+
+                const departmentId = this.getAttribute('data-id');
+
+                Swal.fire({
+                    title: 'តើអ្នកចង់លុបដេប៉ាតឺម៉ង់នេះ?',
+                    text: "សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'យល់ព្រមលុប!',
+                    cancelButtonText: 'បោះបង់'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Send a POST request to delete the department
+                        const formData = new FormData();
+                        formData.append('department_id', departmentId);
+
+                        fetch('process_delete_department.php', {
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(response => response.text())
+                            .then(data => {
+                                Swal.fire('លុបរួច!', 'ដេប៉ាតឺម៉ង់ត្រូវបានលុប.', 'success')
+                                    .then(() => {
+                                        location.reload(); // Reload the page to update the table
+                                    });
+                            })
+                            .catch(error => {
+                                Swal.fire('មានបញ្ហា!', 'មិនអាចលុបបានទេ!', 'error');
+                            });
+                    }
+                });
             });
         });
     });

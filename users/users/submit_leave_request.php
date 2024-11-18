@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($leave_count > 0) {
         $_SESSION['alert'] = [
             'type' => 'danger',
-            'message' => 'អ្នកបានដាក់សំណើឈប់សម្រាកសម្រាប់ថ្ងៃនេះរួចហើយ។ សូមព្យាយាមម្តងទៀតដោយសំរេចពីថ្ងៃផ្សេងទៀត។'
+            'message' => 'អ្នកបានដាក់សំណើឈប់សម្រាកសម្រាប់ថ្ងៃនេះរួចហើយ។'
         ];
         header('Location: request_leave.php');
         exit;
@@ -172,7 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $sql_insert = "INSERT INTO leave_requests 
                 (user_id, fromDate, toDate, total_days, reason, status, date_send, approved_by, department_id, note) 
                 VALUES 
-                (:user_id, :from_date, :to_date, :total_days, :reason, 'កំពុងរងចាំ', :date_send, NULL, :department_id, :note)";
+                (:user_id, :from_date, :to_date, :total_days, :reason, 'រងចាំអនុញ្ញាត', :date_send, NULL, :department_id, :note)";
 
     try {
         $stmt_insert = $conn->prepare($sql_insert);
@@ -201,7 +201,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $_SESSION['alert'] = [
             'type' => 'success',
-            'message' => 'សំណើឈប់សម្រាករបស់អ្នកត្រូវបានដាក់ស្នើដោយជោគជ័យ។'
+            'message' => 'ដាក់ស្នើសុំបានដោយជោគជ័យ។'
         ];
         header('Location: request_leave.php');
         exit;

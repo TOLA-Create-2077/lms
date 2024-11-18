@@ -21,7 +21,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $phone_number = trim($_POST['phone_number']);
     $password = trim($_POST['password']);
     $confirm_password = trim($_POST['confirm_password']);
-    $department_id = $_POST['department_id'];
+    // Check that department_id is valid if it's provided
+    if (!empty($department_id)) {
+        $dept_check = $pdo->prepare("SELECT COUNT(*) FROM departments WHERE department_id = :department_id");
+        $dept_check->bindParam(':department_id', $department_id, PDO::PARAM_INT);
+        $dept_check->execute();
+        if ($dept_check->fetchColumn() == 0) {
+            die("Invalid department ID.");
+        }
+    } else {
+        $department_id = null; // Assign NULL if no department is selected
+    }
+
     $role = $_POST['role'];
 
     // Validate the password and confirm password
@@ -75,7 +86,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bindParam(':email', $email);
     $stmt->bindParam(':phone_number', $phone_number);
     $stmt->bindParam(':password', $hashed_password);
-    $stmt->bindParam(':department_id', $department_id);
+    $stmt->bindParam(':department_id', $department_id, PDO::PARAM_INT | PDO::PARAM_NULL);
+
     $stmt->bindParam(':role', $role);
     $stmt->bindParam(':image_url', $image_url);
 

@@ -46,7 +46,7 @@ $monthlyRequestsResult = $conn->query($sql)->fetchAll(PDO::FETCH_ASSOC);
                         <table id="dataTable" class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    <th>#</th>
                                     <th>ឈ្មោះ</th>
                                     <th>កាលបរិច្ឆេទចាប់ផ្តើម</th>
                                     <th>កាលបរិច្ឆេទបញ្ចប់</th>

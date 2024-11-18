@@ -28,7 +28,7 @@
                 <!-- Statistics Cards -->
                 <?php
                 // Fetching the counts for dashboard statistics
-                $pendingRequestsQuery = "SELECT COUNT(*) AS pending_count FROM leave_requests WHERE status = 'កំពុងរងចាំ'";
+                $pendingRequestsQuery = "SELECT COUNT(*) AS pending_count FROM leave_requests WHERE status = 'រងចាំអនុញ្ញាត'";
                 $pendingResult = $conn->query($pendingRequestsQuery)->fetch(PDO::FETCH_ASSOC);
 
                 $monthlyRequestsQuery = "SELECT COUNT(*) AS monthly_count FROM leave_requests WHERE status = 'អនុញ្ញាត' AND MONTH(fromDate) = MONTH(CURDATE())AND YEAR(fromDate) = YEAR(CURDATE())";
@@ -39,28 +39,11 @@
 
                 $staffMembersQuery = "SELECT COUNT(*) AS staff_count FROM user_info WHERE role = 'user'";
                 $staffResult = $conn->query($staffMembersQuery)->fetch(PDO::FETCH_ASSOC);
+
+                $derectorMembersQuery = "SELECT COUNT(*) AS director_count FROM user_info WHERE role = 'staff'";
+                $directorResult = $conn->query($derectorMembersQuery)->fetch(PDO::FETCH_ASSOC);
                 ?>
 
-                <div class="col-sm-6 col-md-3">
-                    <div class="card card-stats card-round small-box" style="overflow: hidden;">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-icon">
-                                    <div class="icon-big text-center icon-info bubble-shadow-small">
-                                        <i class="fas fa-hourglass-half"></i> <!-- Icon for pending requests -->
-                                    </div>
-                                </div>
-                                <div class="col col-stats ms-3 ms-sm-0">
-                                    <div class="numbers">
-                                        <p class="card-category">សំណើរច្បាប់ដែលកំពុ​ងរងចាំ</p>
-                                        <h4 class="card-title"><?php echo $pendingResult['pending_count']; ?></h4>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <a href="leave_manage.php" style="background-color:  #aeababc7; display:flex;justify-content: center;align-items:center; color:white" class="small-box-footer p-1">ព័ត៌មានបន្ថែម &nbsp <i class="fas fa-arrow-circle-right"></i></a>
-                    </div>
-                </div>
 
                 <div class="col-sm-6 col-md-3">
                     <div class="card card-stats card-round small-box" style="overflow: hidden;">
@@ -124,7 +107,66 @@
                         <a href="user_list.php" style="background-color:  #aeababc7; display:flex;justify-content: center;align-items:center; color:white" class="small-box-footer p-1">ព័ត៌មានបន្ថែម &nbsp<i class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
+                <div class="col-sm-6 col-md-3">
+                    <div class="card card-stats card-round small-box" style="overflow: hidden;">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-icon">
+                                    <div class="icon-big text-center icon-info bubble-shadow-small">
+                                        <i class="fas fa-users"></i> <!-- Icon for staff members -->
+                                    </div>
+                                </div>
+                                <div class="col col-stats ms-3 ms-sm-0">
+                                    <div class="numbers">
+                                        <p class="card-category">ចំនួនអ្នកអនុញ្ញាតច្បាប់</p>
+                                        <h4 class="card-title"><?php echo $directorResult['director_count']; ?></h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="derector_list.php" style="background-color:  #aeababc7; display:flex;justify-content: center;align-items:center; color:white" class="small-box-footer p-1">ព័ត៌មានបន្ថែម &nbsp<i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
             </div>
+            <!-- Chart Section -->
+            <canvas id="departmentChart" width="400" height="200"></canvas>
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                fetch('fetch_departments.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        const departmentNames = data.map(item => item.department_name);
+                        const leaveCounts = data.map(item => item.leave_count);
+
+                        new Chart(document.getElementById('departmentChart').getContext('2d'), {
+                            type: 'bar',
+                            data: {
+                                labels: departmentNames,
+                                datasets: [{
+                                    label: 'Leave Requests per Department',
+                                    data: leaveCounts,
+                                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                                    borderColor: 'rgba(54, 162, 235, 1)',
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Number of Leave Requests'
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    })
+                    .catch(error => console.error('Error fetching department data:', error));
+            </script>
         </div>
     </div>
 

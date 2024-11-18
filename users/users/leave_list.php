@@ -129,7 +129,7 @@ $leaveRequests = getLeaveRequests($statusFilter, $monthFilter, $yearFilter);
                                     <label for="status" class="mr-2">Status:</label>
                                     <select name="status" id="statusFilter" class="form-control">
                                         <option value="">ទាំងអស់</option>
-                                        <option value="កំពុងរងចាំ" <?php echo ($statusFilter == 'កំពុងរងចាំ') ? 'selected' : ''; ?>>កំពុងរងចាំ</option>
+                                        <option value="រងចាំអនុញ្ញាត" <?php echo ($statusFilter == 'រងចាំអនុញ្ញាត') ? 'selected' : ''; ?>> រងចាំអនុញ្ញាត</option>
                                         <option value="អនុញ្ញាត" <?php echo ($statusFilter == 'អនុញ្ញាត') ? 'selected' : ''; ?>>អនុញ្ញាត</option>
                                         <option value="បដិសេធ" <?php echo ($statusFilter == 'បដិសេធ') ? 'selected' : ''; ?>>បដិសេធ</option>
                                         <option value="បោះបង់" <?php echo ($statusFilter == 'បោះបង់') ? 'selected' : ''; ?>>បោះបង់</option>
@@ -209,7 +209,7 @@ $leaveRequests = getLeaveRequests($statusFilter, $monthFilter, $yearFilter);
                                                 </span>
                                             </td>
                                             <td>
-                                                <?php if ($request['status'] == 'កំពុងរងចាំ'): ?>
+                                                <?php if ($request['status'] == 'រងចាំអនុញ្ញាត'): ?>
                                                     <a href="view_leave_request.php?id=<?php echo $request['leave_id']; ?>" class="btn btn-info btn-sm">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
@@ -252,7 +252,7 @@ function getStatusBadgeClass($status)
         'អនុញ្ញាត' => 'badge bg-success',
         'បដិសេធ' => 'danger',
         'បោះបង់' => 'secondary',
-        'កំពុងរងចាំ' => 'warning'
+        'រងចាំអនុញ្ញាត' => 'warning'
     ];
     return $statusClasses[$status] ?? 'secondary';
 }

@@ -68,31 +68,27 @@ $conn->close();
                             <form action="proccess_add_user.php" method="post" enctype="multipart/form-data">
                                 <!-- File input -->
                                 <input type="file" id="image_url" name="image_url" accept="image/*" style="display: none;" onchange="previewImage(event)">
-                                <!-- Other form fields... -->
                         </center>
                     </div>
                 </div>
 
-
                 <script>
                     function previewImage(event) {
-                        const imagePreview = document.getElementById('imagePreview'); // Select the image preview element
-                        const file = event.target.files[0]; // Get the selected file
+                        const imagePreview = document.getElementById('imagePreview');
+                        const file = event.target.files[0];
                         if (file) {
-                            const reader = new FileReader(); // Create a FileReader instance
+                            const reader = new FileReader();
                             reader.onload = function(e) {
-                                imagePreview.src = e.target.result; // Update the src of the image preview
+                                imagePreview.src = e.target.result;
                             };
-                            reader.readAsDataURL(file); // Read the file as a data URL
+                            reader.readAsDataURL(file);
                         } else {
-                            // If no file is selected, reset to the default image
-                            imagePreview.src = '../../assets/img/image.png'; // Change this path as needed
+                            imagePreview.src = '../../assets/img/image.png';
                         }
                     }
                 </script>
 
                 <div class="col-md-9">
-
                     <table class="table table-bordered">
                         <tr>
                             <td>គោត្តនាម</td>
@@ -107,9 +103,20 @@ $conn->close();
                             <td><input type="text" class="form-control" name="username" required></td>
                         </tr>
                         <tr>
+                            <td>តួនាទី</td>
+                            <td>
+                                <select class="form-control" name="role" id="role" required>
+                                    <option value="" disabled selected>--ជ្រើសរើស--</option>
+                                    <option value="staff">គណៈគ្រប់គ្រង</option>
+                                    <option value="user">គ្រូបង្រៀន</option>
+                                    <option value="admin">អ្នកគ្រប់គ្រង</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr id="department-row">
                             <td>ដេប៉ាតឺម៉ង់</td>
                             <td>
-                                <select class="form-control" name="department_id" required>
+                                <select class="form-control" name="department_id">
                                     <option value="">ជ្រើសរើសដេប៉ាតឺម៉ង់</option>
                                     <?php foreach ($departments as $department) { ?>
                                         <option value="<?php echo $department['department_id']; ?>">
@@ -119,6 +126,23 @@ $conn->close();
                                 </select>
                             </td>
                         </tr>
+
+                        <script>
+                            document.getElementById('role').addEventListener('change', function() {
+                                var departmentRow = document.getElementById('department-row');
+                                if (this.value === 'staff') {
+                                    departmentRow.style.display = 'none';
+                                } else {
+                                    departmentRow.style.display = 'table-row';
+                                }
+                            });
+
+                            window.addEventListener('load', function() {
+                                var role = document.getElementById('role').value;
+                                document.getElementById('department-row').style.display = role === 'staff' ? 'none' : 'table-row';
+                            });
+                        </script>
+
                         <tr>
                             <td>អ៊ីមែល</td>
                             <td><input type="email" class="form-control" name="email" required></td>
@@ -134,17 +158,6 @@ $conn->close();
                         <tr>
                             <td>បញ្ជាក់ពាក្យសម្ងាត់</td>
                             <td><input type="password" class="form-control" name="confirm_password" required></td>
-                        </tr>
-
-                        <tr>
-                            <td>តួនាទី</td>
-                            <td>
-                                <select class="form-control" name="role" required>
-                                    <option value="staff">ថ្នាក់ដឹកនាំ</option>
-                                    <option value="user">គ្រូបង្រៀន</option>
-                                    <option value="admin">អ្នកគ្រប់គ្រង់</option>
-                                </select>
-                            </td>
                         </tr>
                     </table>
                     <div class="text-end">

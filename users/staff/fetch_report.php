@@ -9,10 +9,17 @@ function validateDate($date, $format = 'Y-m-d')
     return $d && $d->format($format) === $date;
 }
 
-// Base query to select leave requests with concatenated first_name and last_name
-$query = "SELECT lr.id, CONCAT(ui.first_name, ' ', ui.last_name) AS fullname, lr.fromDate, lr.toDate, lr.reason, lr.status
+$query = "SELECT lr.id, 
+                 CONCAT(ui.first_name, ' ', ui.last_name) AS fullname, 
+                 lr.fromDate, 
+                 lr.toDate, 
+                 lr.total_days, 
+                 lr.reason, 
+                 lr.status, 
+                 COALESCE(CONCAT(approver.first_name, ' ', approver.last_name), '') AS approver_name
           FROM leave_requests lr
-          JOIN user_info ui ON lr.user_id = ui.user_id";
+          JOIN user_info ui ON lr.user_id = ui.user_id
+          LEFT JOIN user_info approver ON lr.approved_by = approver.user_id";
 
 $types = '';
 $params = [];

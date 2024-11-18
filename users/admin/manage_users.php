@@ -1,23 +1,19 @@
-<?php include_once('../../include/session_admin.php');; ?>
+<?php include_once('../../include/session_admin.php'); ?>
 <?php include('../../include/sidebar.php'); ?>
 
 
 <?php
 include('../../conn_db.php');
-
-$sql = "SELECT u.user_id, u.first_name, u.last_name, u.username, u.email, u.phone_number,u.status, d.department_name, u.role
+$sql = "SELECT u.user_id, u.first_name, u.last_name, u.username, u.email, u.phone_number, u.status, d.department_name, u.role
         FROM user_info u
-        JOIN departments d ON u.department_id = d.department_id 
+        LEFT JOIN departments d ON u.department_id = d.department_id 
         WHERE u.role IN ('user', 'staff', 'admin')";
 
 $result = $conn->query($sql);
 $users = $result->fetchAll();
 
-// Fetch departments for the add user form
-$departmentQuery = "SELECT department_id, department_name FROM departments";
-$departmentResult = $conn->query($departmentQuery);
-$departments = $departmentResult->fetchAll();
 ?>
+
 <!DOCTYPE html>
 <html lang="km"> <!-- Assuming you're using Khmer language -->
 
@@ -106,14 +102,14 @@ $departments = $departmentResult->fetchAll();
                             <table class="table table-bordered table-striped table-hover" id="dataTable">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
+                                        <th>#</th>
                                         <th>នាមត្រកូល</th>
                                         <th>នាម</th>
                                         <th>ឈ្មោះអ្នកប្រើប្រាស់</th>
                                         <th>អ៊ីមែល</th>
                                         <th>លេខទូរស័ព្ទ</th>
                                         <th>ដេប៉ាតឺម៉ង</th>
-                                        <th>តួនាទី</th>
+                                        <th>User_role</th>
                                         <th>សកម្មភាព</th>
                                         <th>Action</th>
                                     </tr>
@@ -130,7 +126,8 @@ $departments = $departmentResult->fetchAll();
                                             <td><?php echo htmlspecialchars($user['username']); ?></td>
                                             <td><?php echo htmlspecialchars($user['email']); ?></td>
                                             <td><?php echo htmlspecialchars($user['phone_number']); ?></td>
-                                            <td><?php echo htmlspecialchars($user['department_name']); ?></td>
+                                            <td><?php echo !empty($user['department_name']) ? htmlspecialchars($user['department_name']) : 'មិនមាន'; ?></td>
+
                                             <td>
                                                 <?php
                                                 // Define an associative array to map role values to Khmer translations

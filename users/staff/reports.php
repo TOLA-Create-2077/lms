@@ -1,80 +1,53 @@
 <?php
-// Enable error reporting for debugging
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 // Include necessary files
 include_once('../../include/session.php');
 include_once('../../include/sidebar.php');
 ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
 
 <div class="container">
     <div class="page-inner">
         <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
-            <div>
-                <h3 class="fw-bold mb-3">របាយការណ៍</h3>
-            </div>
+            <!-- Page Title -->
+            <!-- <h3 class="fw-bold mb-3">របាយការណ៍</h3> -->
         </div>
 
-        <!-- Button to toggle filter form -->
+        <!-- Export Button -->
         <div class="row">
             <div class="col-md-12">
-                <button id="toggleFilterForm" class="btn btn-secondary mb-3">
-                    <i class="fas fa-filter"></i> Show Filter
-                </button>
                 <button type="button" class="btn btn-success mb-3" onclick="exportFilteredData()">
                     <i class="fas fa-file-export"></i> Export
                 </button>
-
-                <script>
-                    document.getElementById('toggleFilterForm').onclick = function() {
-                        let filterForm = document.getElementById('filterFormContainer');
-                        filterForm.style.display = filterForm.style.display === "none" ? "block" : "none";
-                        this.innerHTML = filterForm.style.display === "block" ?
-                            '<i class="fas fa-filter"></i> Hide Filter' :
-                            '<i class="fas fa-filter"></i> Show Filter';
-                    };
-
-                    function exportFilteredData() {
-                        let startDate = document.querySelector('input[name="startDate"]').value;
-                        let endDate = document.querySelector('input[name="endDate"]').value;
-                        let department = document.querySelector('select[name="department"]').value;
-                        let fullName = document.querySelector('input[name="employeeName"]').value;
-                        let status = document.querySelector('select[name="status"]').value;
-                        let month = document.querySelector('select[name="month"]').value;
-                        let year = document.querySelector('select[name="year"]').value;
-
-                        window.location.href = `../../export/export_report.php?startDate=${startDate}&endDate=${endDate}&department=${department}&employeeName=${fullName}&status=${status}&month=${month}&year=${year}`;
-                    }
-                </script>
-
-
             </div>
         </div>
 
-        <!-- Filter form -->
-        <div class="row" id="filterFormContainer" style="display:none;">
+        <!-- Filter Form -->
+        <div class="row" id="filterFormContainer">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
                         <h4 class="card-title">តម្រូវការរាយការណ៍</h4>
                     </div>
                     <div class="card-body">
-                        <form id="reportFilterForm" method="POST" action="path/to/your/report_script.php">
+                        <form id="reportFilterForm" method="POST">
                             <div class="row">
+                                <!-- Start Date -->
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="startDate">កាលបរិច្ឆេទចាប់ផ្តើម</label>
                                         <input type="date" class="form-control" id="startDate" name="startDate" />
                                     </div>
                                 </div>
+
+                                <!-- End Date -->
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="endDate">កាលបរិច្ឆេទបញ្ចប់</label>
                                         <input type="date" class="form-control" id="endDate" name="endDate" />
                                     </div>
                                 </div>
+
+                                <!-- Department -->
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="department">ដេប៉ាតឺម៉ង់</label>
@@ -86,12 +59,8 @@ include_once('../../include/sidebar.php');
                                             $result = $conn->query($sql);
 
                                             if ($result) {
-                                                if ($result->num_rows > 0) {
-                                                    while ($dept = $result->fetch_assoc()) {
-                                                        echo "<option value='{$dept['department_id']}'>{$dept['department_name']}</option>";
-                                                    }
-                                                } else {
-                                                    echo "<option value=''>No departments found</option>";
+                                                while ($dept = $result->fetch_assoc()) {
+                                                    echo "<option value='{$dept['department_id']}'>{$dept['department_name']}</option>";
                                                 }
                                             } else {
                                                 echo "<option value=''>Error fetching departments: " . $conn->error . "</option>";
@@ -103,244 +72,333 @@ include_once('../../include/sidebar.php');
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Additional Filters -->
                             <div class="row">
+                                <!-- Employee Name -->
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="employeeName">ឈ្មោះបុគ្គលិក</label>
                                         <input type="text" class="form-control" id="employeeName" name="employeeName" placeholder="បញ្ចូលឈ្មោះបុគ្គលិក" />
-                                        <div id="searchResults" class="mt-2"></div> <!-- Container for search results -->
+                                        <div id="searchResults" class="mt-2"></div> <!-- Search results container -->
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="status">ស្ថានភាព</label>
-                                        <select class="form-control" id="status" name="status">
-                                            <option value="">ជ្រើសរើសស្ថានភាព</option>
-                                            <option value="អនុញ្ញាត">អនុញ្ញាត</option>
-                                            <option value="បដិសេធ">បដិសេធ</option>
 
-                                        </select>
-                                    </div>
-                                </div>
+                                <!-- Month -->
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="month">ខែ</label>
                                         <select class="form-control" id="month" name="month">
                                             <option value="">ជ្រើសរើសខែ</option>
-                                            <?php
-                                            for ($i = 1; $i <= 12; $i++) {
-                                                echo "<option value='$i'>" . date('F', mktime(0, 0, 0, $i, 1)) . "</option>";
-                                            }
-                                            ?>
+                                            <?php for ($i = 1; $i <= 12; $i++): ?>
+                                                <option value="<?= $i ?>"><?= date('F', mktime(0, 0, 0, $i, 1)) ?></option>
+                                            <?php endfor; ?>
                                         </select>
                                     </div>
                                 </div>
+
+                                <!-- Year -->
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="year">ឆ្នាំ</label>
                                         <select class="form-control" id="year" name="year">
                                             <option value="">ជ្រើសរើសឆ្នាំ</option>
-                                            <?php
-                                            for ($i = 2022; $i <= date("Y"); $i++) {
-                                                echo "<option value='$i'>$i</option>";
-                                            }
-                                            ?>
+                                            <?php for ($i = 2022; $i <= date("Y"); $i++): ?>
+                                                <option value="<?= $i ?>"><?= $i ?></option>
+                                            <?php endfor; ?>
                                         </select>
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Filter and Reset Buttons -->
                             <div class="d-flex justify-content-end">
-                                <button type="reset" class="btn btn-danger">
-                                    <i class="fas fa-undo"></i> Clear
-                                </button>&nbsp;
+                                <a href="reports.php" class="btn btn-danger">
+                                    <i class="fas fa-undo"></i> សម្អាត
+                                </a>&nbsp;
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-search"></i> Filter
+                                    <i class="fas fa-search"></i> ស្វែងរក
                                 </button>
                             </div>
                         </form>
-
-
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Report table -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="card-title">របាយការណ៍សំណើច្បាប់</h4>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-striped" id="reportTable">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>ឈ្មោះ</th>
-                                    <th>កាលបរិច្ឆេទចាប់ផ្តើម</th>
-                                    <th>កាលបរិច្ឆេទបញ្ចប់</th>
-                                    <th>មូលហេតុ</th>
-                                    <th>ស្ថានភាព</th>
-                                    <th>លម្អិត</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Data will be populated here via JavaScript -->
-                            </tbody>
-                        </table>
+                <!-- Report Table -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">របាយការណ៍សំណើច្បាប់</h4>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-striped" id="reportTable">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>ឈ្មោះ</th>
+                                            <th>ដេប៉ាតឺម៉ង់</th>
+                                            <th>ចំនួនសុំច្បាប់សរុប</th>
+                                            <th>មើលលម្អិត</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                                            // Apply filters from the form submission
+                                            $startDate = $_POST['startDate'] ?? '';
+                                            $endDate = $_POST['endDate'] ?? '';
+                                            $department = $_POST['department'] ?? '';
+                                            $employeeName = $_POST['employeeName'] ?? '';
+                                            $month = $_POST['month'] ?? '';
+                                            $year = $_POST['year'] ?? '';
 
+                                            // Query with filters
+                                            $sql = "SELECT 
+                    leave_requests.id, 
+                    user_info.first_name, 
+                    user_info.last_name, 
+                    departments.department_name, 
+                    COUNT(leave_requests.id) AS total_requests 
+                FROM leave_requests
+                JOIN user_info ON leave_requests.user_id = user_info.user_id
+                JOIN departments ON user_info.department_id = departments.department_id
+                WHERE 1";
+
+                                            // Apply filters (if any)
+                                            if ($startDate) {
+                                                $sql .= " AND leave_requests.fromDate >= '$startDate'";
+                                            }
+                                            if ($endDate) {
+                                                $sql .= " AND leave_requests.toDate <= '$endDate'";
+                                            }
+                                            if ($department) {
+                                                $sql .= " AND user_info.department_id = '$department'";
+                                            }
+                                            if ($employeeName) {
+                                                $sql .= " AND (user_info.first_name LIKE '%$employeeName%' OR user_info.last_name LIKE '%$employeeName%')";
+                                            }
+                                            if ($month) {
+                                                $sql .= " AND MONTH(leave_requests.fromDate) = '$month'";
+                                            }
+                                            if ($year) {
+                                                $sql .= " AND YEAR(leave_requests.fromDate) = '$year'";
+                                            }
+
+                                            $sql .= " GROUP BY leave_requests.user_id";
+
+                                            // Execute the query
+                                            include('../../conn_db1.php');
+                                            $result = $conn->query($sql);
+
+                                            if ($result) {
+                                                while ($row = $result->fetch_assoc()) {
+                                                    echo "<tr>
+                        <td>{$row['id']}</td>
+                        <td>{$row['first_name']} {$row['last_name']}</td>
+                        <td>{$row['department_name']}</td>
+                        <td>{$row['total_requests']}</td>
+                        <td><a href='view_details.php?id={$row['id']}'>View Details</a></td>
+                    </tr>";
+                                                }
+                                            } else {
+                                                echo "<tr><td colspan='5'>No records found</td></tr>";
+                                            }
+
+                                            $conn->close();
+                                        } else {
+                                            // If no form is submitted, fetch all records
+                                            include('../../conn_db1.php');
+                                            $sql = "SELECT 
+                    leave_requests.id, 
+                    user_info.first_name, 
+                    user_info.last_name, 
+                    departments.department_name, 
+                    COUNT(leave_requests.id) AS total_requests 
+                FROM leave_requests
+                JOIN user_info ON leave_requests.user_id = user_info.user_id
+                JOIN departments ON user_info.department_id = departments.department_id
+                GROUP BY leave_requests.user_id";
+
+                                            $result = $conn->query($sql);
+
+                                            if ($result) {
+                                                while ($row = $result->fetch_assoc()) {
+                                                    echo "<tr>
+                        <td>{$row['id']}</td>
+                        <td>{$row['first_name']} {$row['last_name']}</td>
+                        <td>{$row['department_name']}</td>
+                        <td>{$row['total_requests']}</td>
+                        <td><a href='view_details.php?id={$row['id']}'>View Details</a></td>
+                    </tr>";
+                                                }
+                                            } else {
+                                                echo "<tr><td colspan='5'>No records found</td></tr>";
+                                            }
+
+                                            $conn->close();
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<!-- Add reference to the xlsx library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 
-<!-- Include footer -->
-<?php include_once('../../include/footer.html'); ?>
-
-<!-- Include xlsx library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
-
-<!-- JavaScript for managing filter form and generating report -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    function liveSearch() {
-        const input = document.getElementById('employeeName').value;
-        const resultsDiv = document.getElementById('searchResults');
+    // Export to Excel function with styling
+    function exportFilteredData() {
+        // Get table and rows
+        var table = document.getElementById("reportTable");
+        var rows = table.rows;
 
-        if (input.length === 0) {
-            // Clear results if input is empty
-            resultsDiv.innerHTML = '';
-            return;
+        // Prepare an array for data
+        var data = [];
+        var header = [];
+
+        // Add title to the top of the Excel sheet
+        data.push(["Leave Requests Report"]);
+
+        // Add header row with custom background
+        for (var i = 0; i < rows[0].cells.length; i++) {
+            header.push(rows[0].cells[i].innerText);
+        }
+        data.push(header);
+
+        // Add table data rows
+        for (var i = 1; i < rows.length; i++) {
+            var rowData = [];
+            for (var j = 0; j < rows[i].cells.length; j++) {
+                rowData.push(rows[i].cells[j].innerText);
+            }
+            data.push(rowData);
         }
 
-        // Create an AJAX request
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'search_employee.php', true); // Point to your PHP file
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.onreadystatechange = function() {
-            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                // Update the results div with the response
-                resultsDiv.innerHTML = this.responseText;
+        // Create a new worksheet and apply styles
+        var ws = XLSX.utils.aoa_to_sheet(data);
+
+        // Style for title and headers
+        var titleCell = {
+            v: "Leave Requests Report",
+            s: {
+                font: {
+                    bold: true,
+                    size: 16,
+                    name: 'Khmer OS Battambang'
+                },
+                alignment: {
+                    horizontal: 'center'
+                }
             }
         };
-        xhr.send('name=' + encodeURIComponent(input)); // Send the input as a POST parameter
-    }
+        ws["!merges"] = [{
+            s: {
+                r: 0,
+                c: 0
+            },
+            e: {
+                r: 0,
+                c: header.length - 1
+            }
+        }]; // Merge title row
+        ws["A1"] = titleCell;
 
-    function fetchAllData() {
-        fetch('fetch_report.php', {
-                method: 'POST',
-                body: new URLSearchParams({
-                    allData: 'true'
-                }) // Parameter to fetch all data
-            })
-            .then(response => response.json())
-            .then(data => {
-                var tableBody = document.querySelector('#reportTable tbody');
-                tableBody.innerHTML = ''; // Clear previous data
-
-                let i = 1; // Use `let` to declare the counter
-                data.forEach(row => {
-                    let tr = document.createElement('tr');
-
-                    // Determine the badge class and translated status
-                    let badgeClass;
-                    let statusText;
-                    switch (row.status) {
-                        case 'អនុញ្ញាត':
-                            badgeClass = 'success';
-                            statusText = 'អនុញ្ញាត';
-                            break;
-                        case 'បដិសេធ':
-                            badgeClass = 'danger';
-                            statusText = 'បដិសេធ';
-                            break;
-                        default:
-                            badgeClass = 'warning';
-                            statusText = 'កំពុងរងចាំ';
-                            break;
+        // Add Khmer font style to headers
+        for (var col = 0; col < header.length; col++) {
+            var cell = ws[XLSX.utils.encode_cell({
+                r: 1,
+                c: col
+            })];
+            cell.s = {
+                font: {
+                    name: "Khmer OS Battambang",
+                    bold: true
+                },
+                fill: {
+                    bgColor: {
+                        rgb: "D3D3D3"
                     }
+                }
+            }; // Set background color for headers
+        }
 
-                    tr.innerHTML = `
-                        <td>${i}</td>
-                        <td>${row.fullname}</td>
-                        <td>${row.fromDate}</td>
-                        <td>${row.toDate}</td>
-                        <td>${row.reason}</td>
-                        <td><span class="badge bg-${badgeClass}">${statusText}</span></td>
-                        <td>
-                            <a href="view_leave_details.php?id=${row.id}" class="btn btn-info btn-sm">
-                                <i class="fas fa-eye"></i> 
-                            </a>
-                        </td>
-                    `;
-                    i++; // Increment counter for each row
-                    tableBody.appendChild(tr);
-                });
-            })
-            .catch(error => console.error('Error fetching data:', error));
-    }
-
-
-
-    // Call function to fetch all data on load
-    window.onload = fetchAllData;
-
-    // Add event listener for filter form submission
-    document.getElementById('reportFilterForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        let formData = new FormData(this);
-
-        fetch('fetch_report.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                var tableBody = document.querySelector('#reportTable tbody');
-                tableBody.innerHTML = ''; // Clear previous data
-
-                let i = 1;
-                data.forEach(row => {
-                    let tr = document.createElement('tr');
-
-                    // Determine badge class and translated status text
-                    let badgeClass;
-                    let statusText;
-                    switch (row.status) {
-                        case 'អនុញ្ញាត':
-                            badgeClass = 'success';
-                            statusText = 'អនុញ្ញាត';
-                            break;
-                        case 'បដិសេធ':
-                            badgeClass = 'danger';
-                            statusText = 'បដិសេធ';
-                            break;
-                        default:
-                            badgeClass = 'warning';
-                            statusText = 'កំពុងរងចាំ';
-                            break;
+        // Add Khmer font style to data rows
+        for (var row = 2; row < data.length; row++) {
+            for (var col = 0; col < header.length; col++) {
+                var cell = ws[XLSX.utils.encode_cell({
+                    r: row,
+                    c: col
+                })];
+                cell.s = {
+                    font: {
+                        name: "Khmer OS Battambang"
                     }
+                };
+            }
+        }
 
-                    tr.innerHTML = `
-                        <td>${i}</td>
-                        <td>${row.fullname}</td>
-                        <td>${row.fromDate}</td>
-                        <td>${row.toDate}</td>
-                        <td>${row.reason}</td>
-                        <td><span class="badge bg-${badgeClass}">${statusText}</span></td>
-                        <td>
-                            <a href="view_leave_details.php?id=${row.id}" class="btn btn-info btn-sm">
-                                <i class="fas fa-eye"></i> 
-                            </a>
-                        </td>
-                    `;
-                    i++;
-                    tableBody.appendChild(tr);
-                });
-            })
-            .catch(error => console.error('Error fetching filtered data:', error));
+        // Create the Excel workbook
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Leave Requests");
+
+        // Export the Excel file
+        XLSX.writeFile(wb, "leave_requests_report.xlsx");
+    }
+    // Create a new worksheet with styling
+    var ws = XLSX.utils.aoa_to_sheet(data);
+
+    // Apply style for title
+    ws["A1"].s = {
+        font: {
+            bold: true,
+            size: 16,
+            name: "Khmer OS Battambang"
+        },
+        alignment: {
+            horizontal: "center"
+        }
+    };
+
+    // Apply styles for headers and data rows
+    data.forEach((row, rowIndex) => {
+        row.forEach((_, colIndex) => {
+            var cellAddress = XLSX.utils.encode_cell({
+                r: rowIndex,
+                c: colIndex
+            });
+            if (!ws[cellAddress]) return; // Skip empty cells
+
+            if (rowIndex === 1) { // Header row
+                ws[cellAddress].s = {
+                    font: {
+                        bold: true,
+                        name: "Khmer OS Battambang"
+                    },
+                    fill: {
+                        fgColor: {
+                            rgb: "D3D3D3"
+                        }
+                    }
+                };
+            } else { // Data rows
+                ws[cellAddress].s = {
+                    font: {
+                        name: "Khmer OS Battambang"
+                    }
+                };
+            }
+        });
     });
+
+    // Export the workbook
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Leave Requests");
+    XLSX.writeFile(wb, "leave_requests_report.xlsx");
 </script>

@@ -16,53 +16,7 @@ try {
     die("Connection failed: " . $e->getMessage());
 }
 
-// Handle form submissions for approve/reject/update actions
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['action']) && isset($_POST['leave_id'])) {
-        $leaveId = $_POST['leave_id'];
 
-        // Validate leave_id
-        if (!is_numeric($leaveId)) {
-            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Invalid leave request ID.'];
-            header("Location: " . $_SERVER['PHP_SELF']);
-            exit();
-        }
-
-        if ($_POST['action'] === 'approve') {
-            try {
-                // Update the leave request status to Approved
-                $updateSql = "UPDATE leave_requests SET status = 'Approved', updated_at = NOW() WHERE id = :id";
-                $stmt = $conn->prepare($updateSql);
-                $stmt->execute(['id' => $leaveId]);
-
-                $_SESSION['alert'] = ['type' => 'success', 'message' => 'Leave request approved successfully.'];
-            } catch (PDOException $e) {
-                $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Failed to approve leave request: ' . $e->getMessage()];
-            }
-        } elseif ($_POST['action'] === 'reject') {
-            // Ensure 'comment' is provided
-            if (isset($_POST['comment']) && !empty(trim($_POST['comment']))) {
-                $comment = trim($_POST['comment']);
-                try {
-                    // Update the leave request status to Rejected with a comment
-                    $updateSql = "UPDATE leave_requests SET status = 'Rejected', comment = :comment, updated_at = NOW() WHERE id = :id";
-                    $stmt = $conn->prepare($updateSql);
-                    $stmt->execute(['id' => $leaveId, 'comment' => $comment]);
-
-                    $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Leave request rejected successfully.'];
-                } catch (PDOException $e) {
-                    $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Failed to reject leave request: ' . $e->getMessage()];
-                }
-            } else {
-                $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Rejection comment is required.'];
-            }
-        }
-
-        // Redirect to avoid form resubmission
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
-    }
-}
 
 // Fetch leave requests from the database
 try {
@@ -70,7 +24,7 @@ try {
     SELECT lr.id, ui.first_name, ui.last_name, lr.fromDate, lr.toDate, lr.total_days, lr.reason, lr.status, lr.comment, lr.date_send
     FROM leave_requests lr
     JOIN user_info ui ON lr.user_id = ui.user_id
-    WHERE lr.status = 'កំពុងរងចាំ'
+    WHERE lr.status = 'រងចាំអនុញ្ញាត'
     ORDER BY lr.date_send DESC
 ";
 
@@ -155,7 +109,7 @@ try {
                                                 </span>
                                             </td>
                                             <td>
-                                                <?php if ($row['status'] === 'កំពុងរងចាំ'): ?>
+                                                <?php if ($row['status'] === 'រងចាំអនុញ្ញាត'): ?>
                                                     <button type="button" onclick="openApproveCommentModal(<?php echo htmlspecialchars($row['id']); ?>)" class="btn btn-success btn-sm">
                                                         <i class="fas fa-check"></i>
                                                     </button>
