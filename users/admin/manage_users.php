@@ -109,7 +109,7 @@ $users = $result->fetchAll();
                                         <th>អ៊ីមែល</th>
                                         <th>លេខទូរស័ព្ទ</th>
                                         <th>ដេប៉ាតឺម៉ង</th>
-                                        <th>User_role</th>
+                                        <th>តួនាទី</th>
                                         <th>សកម្មភាព</th>
                                         <th>Action</th>
                                     </tr>

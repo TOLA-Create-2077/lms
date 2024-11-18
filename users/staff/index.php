@@ -127,9 +127,18 @@
                         <a href="derector_list.php" style="background-color:  #aeababc7; display:flex;justify-content: center;align-items:center; color:white" class="small-box-footer p-1">ព័ត៌មានបន្ថែម &nbsp<i class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
+                <div class="col">
+                    <div class="card card-stats card-round small-box" style="overflow: hidden;">
+                        <div class="card-body">
+                            <!-- Chart Section -->
+                            <canvas id="departmentChart" width="400" height="200"></canvas>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
-            <!-- Chart Section -->
-            <canvas id="departmentChart" width="400" height="200"></canvas>
+
 
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script>

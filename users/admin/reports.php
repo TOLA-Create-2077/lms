@@ -4,7 +4,16 @@ include_once('../../include/session.php');
 include_once('../../include/sidebar.php');
 ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
-
+<style>
+    /* Center text in table headers and cells */
+    .table th,
+    .table td {
+        text-align: center;
+        /* Horizontal centering */
+        vertical-align: middle;
+        /* Vertical centering */
+    }
+</style>
 <div class="container">
     <div class="page-inner">
         <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
@@ -131,21 +140,22 @@ include_once('../../include/sidebar.php');
                             <div class="card-header">
                                 <h4 class="card-title">របាយការណ៍សំណើច្បាប់</h4>
                             </div>
+
                             <div class="card-body">
                                 <table class="table table-striped" id="reportTable">
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>ឈ្មោះ</th>
+                                            <th>ឈ្មោះគ្រូបង្រៀន</th>
                                             <th>ដេប៉ាតឺម៉ង់</th>
-                                            <th>ចំនួនសុំច្បាប់សរុប</th>
-                                            <th>មើលលម្អិត</th>
+                                            <th>ចំនួនច្បាប់ឈប់សំរាក</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
+                                        $i = 1; // Initialize the counter
                                         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                                            // Apply filters from the form submission
                                             $startDate = $_POST['startDate'] ?? '';
                                             $endDate = $_POST['endDate'] ?? '';
                                             $department = $_POST['department'] ?? '';
@@ -153,19 +163,17 @@ include_once('../../include/sidebar.php');
                                             $month = $_POST['month'] ?? '';
                                             $year = $_POST['year'] ?? '';
 
-                                            // Query with filters
                                             $sql = "SELECT 
-                    leave_requests.id, 
-                    user_info.first_name, 
-                    user_info.last_name, 
-                    departments.department_name, 
-                    COUNT(leave_requests.id) AS total_requests 
-                FROM leave_requests
-                JOIN user_info ON leave_requests.user_id = user_info.user_id
-                JOIN departments ON user_info.department_id = departments.department_id
-                WHERE 1";
+                leave_requests.user_id, 
+                user_info.first_name, 
+                user_info.last_name, 
+                departments.department_name, 
+                COUNT(leave_requests.id) AS total_requests 
+            FROM leave_requests
+            JOIN user_info ON leave_requests.user_id = user_info.user_id
+            JOIN departments ON user_info.department_id = departments.department_id
+            WHERE 1";
 
-                                            // Apply filters (if any)
                                             if ($startDate) {
                                                 $sql .= " AND leave_requests.fromDate >= '$startDate'";
                                             }
@@ -187,53 +195,55 @@ include_once('../../include/sidebar.php');
 
                                             $sql .= " GROUP BY leave_requests.user_id";
 
-                                            // Execute the query
                                             include('../../conn_db1.php');
                                             $result = $conn->query($sql);
 
                                             if ($result) {
                                                 while ($row = $result->fetch_assoc()) {
+                                                    $detailsLink = "view_details.php?user_id={$row['user_id']}&startDate={$startDate}&endDate={$endDate}&month={$month}&year={$year}";
                                                     echo "<tr>
-                        <td>{$row['id']}</td>
+                        <td>{$i}</td> <!-- Display counter -->
                         <td>{$row['first_name']} {$row['last_name']}</td>
                         <td>{$row['department_name']}</td>
-                        <td>{$row['total_requests']}</td>
-                        <td><a href='view_details.php?id={$row['id']}'>View Details</a></td>
+                        <td><a href='$detailsLink'>{$row['total_requests']}</a></td>
+                        <td><a href='$detailsLink'>  <i class='fas fa-eye'></i></a></td>
                     </tr>";
+                                                    $i++; // Increment the counter
                                                 }
                                             } else {
-                                                echo "<tr><td colspan='5'>No records found</td></tr>";
+                                                echo "<tr><td colspan='5'>គ្មានទិន្នន័យ</td></tr>";
                                             }
 
                                             $conn->close();
                                         } else {
-                                            // If no form is submitted, fetch all records
                                             include('../../conn_db1.php');
                                             $sql = "SELECT 
-                    leave_requests.id, 
-                    user_info.first_name, 
-                    user_info.last_name, 
-                    departments.department_name, 
-                    COUNT(leave_requests.id) AS total_requests 
-                FROM leave_requests
-                JOIN user_info ON leave_requests.user_id = user_info.user_id
-                JOIN departments ON user_info.department_id = departments.department_id
-                GROUP BY leave_requests.user_id";
+                leave_requests.user_id, 
+                user_info.first_name, 
+                user_info.last_name, 
+                departments.department_name, 
+                COUNT(leave_requests.id) AS total_requests 
+            FROM leave_requests
+            JOIN user_info ON leave_requests.user_id = user_info.user_id
+            JOIN departments ON user_info.department_id = departments.department_id
+            GROUP BY leave_requests.user_id";
 
                                             $result = $conn->query($sql);
 
                                             if ($result) {
                                                 while ($row = $result->fetch_assoc()) {
+                                                    $detailsLink = "view_details.php?user_id={$row['user_id']}";
                                                     echo "<tr>
-                        <td>{$row['id']}</td>
+                        <td>{$i}</td> <!-- Display counter -->
                         <td>{$row['first_name']} {$row['last_name']}</td>
                         <td>{$row['department_name']}</td>
-                        <td>{$row['total_requests']}</td>
-                        <td><a href='view_details.php?id={$row['id']}'>View Details</a></td>
+                        <td><a href='$detailsLink'>{$row['total_requests']}</a></td>
+                        <td><a href='$detailsLink'><i class='fas fa-eye'></i></a></td>
                     </tr>";
+                                                    $i++; // Increment the counter
                                                 }
                                             } else {
-                                                echo "<tr><td colspan='5'>No records found</td></tr>";
+                                                echo "<tr><td colspan='5'>គ្មានទិន្នន័យ</td></tr>";
                                             }
 
                                             $conn->close();
@@ -241,6 +251,7 @@ include_once('../../include/sidebar.php');
                                         ?>
                                     </tbody>
                                 </table>
+
                             </div>
                         </div>
                     </div>
@@ -402,3 +413,4 @@ include_once('../../include/sidebar.php');
     XLSX.utils.book_append_sheet(wb, ws, "Leave Requests");
     XLSX.writeFile(wb, "leave_requests_report.xlsx");
 </script>
+<?php include_once('../../include/footer.html'); ?>

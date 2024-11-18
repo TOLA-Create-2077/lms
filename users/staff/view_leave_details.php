@@ -174,15 +174,15 @@ function formatDate($dateStr, $format = 'Y-m-d H:i:s')
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th>បានបញ្ជូននៅថ្ងៃ</th>
+                                        <th>បានស្នើនៅថ្ងៃ</th>
                                         <td><?php echo formatDate($leave['date_send'], 'd/m/Y H:i:s'); ?></td>
                                     </tr>
                                     <tr>
-                                        <th>ផ្នែក</th>
+                                        <th>ដេប៉ាតឺម៉ង់</th>
                                         <td><?php echo htmlspecialchars($leave['department_name'] ?? 'N/A'); ?></td>
                                     </tr>
                                     <tr>
-                                        <th>បានធ្វើបច្ចុប្បន្នភាពនៅ</th>
+                                        <th>បានអនុម័តនៅថ្ងៃ</th>
                                         <td><?php echo formatDate($leave['updated_at'], 'd/m/Y H:i:s'); ?></td>
                                     </tr>
                                     <tr>
